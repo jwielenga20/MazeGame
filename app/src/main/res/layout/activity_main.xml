@@ -8,11 +8,43 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <fragment
+   <!-- <fragment
         android:id="@+id/gameStarterFragment"
         android:name="edu.augustana.csc490.gamestarter.MainGameFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:layout="@layout/fragment_game" />
+   -->
+
+    <Button
+        android:layout_width="400px"
+        android:layout_height="wrap_content"
+        android:text="Maze"
+        android:id="@+id/mazeStartButton"
+        android:textSize="24dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="400px"
+        android:layout_height="wrap_content"
+        android:text="Monsters"
+        android:id="@+id/monsterButton"
+        android:textSize="24dp"
+        android:layout_below="@+id/mazeStartButton"
+        android:layout_alignLeft="@+id/mazeStartButton"
+        android:layout_alignStart="@+id/mazeStartButton"
+        android:layout_marginTop="52dp" />
+
+    <TextView
+        android:layout_width="600px"
+        android:layout_height="100px"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Maze Game"
+        android:id="@+id/mazeGameTextView"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="45dp"
+        android:textSize="48dp"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
