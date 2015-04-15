@@ -78,16 +78,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
             mazeThread.start();
         }
     }
-    public void loadMaze(Context context){
-        try {
-            AssetManager assetManager = context.getAssets();
-            InputStream inputStream = assetManager.open("trial.png");
-            mazeImg = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-        }catch(IOException e){
-
-        }
-    }
     //This class is to update the positions of the player and determine where they are compared
     //to the end of the game.
     private void updatePositions(){
@@ -96,7 +86,15 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
 
     //This method is to draw the overall maze itself from a predetermined picture that is made
     //paint.
-    private void drawMazeElements(Canvas canvas) {
+    private void drawMazeElements(Canvas canvas, Context context) {
+        try {
+            AssetManager assetManager = context.getAssets();
+            InputStream inputStream = assetManager.open("trial.png");
+            mazeImg = BitmapFactory.decodeStream(inputStream);
+            inputStream.close();
+        }catch(IOException e){
+
+        }
         image.set(0,0,screenWidth,screenHeight);
         canvas.drawBitmap(mazeImg,null,image,null);
     }
@@ -179,7 +177,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
                     canvas = surfaceHolder.lockCanvas(null);
                         synchronized(surfaceHolder){
                             //updatePositions;
-                            drawMazeElements(canvas);
+                            drawMazeElements(canvas, getContext());
                         }
                 }finally{
                     if (canvas != null){
