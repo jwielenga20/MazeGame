@@ -43,6 +43,5 @@ public class MainGameFragment extends Fragment
    public void onDestroy()
    {
       super.onDestroy();
-      mainGameView.releaseResources();
    }
 }
