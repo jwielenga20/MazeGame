@@ -2,6 +2,7 @@
 // Displays and controls the Cannon Game
 package edu.augustana.csc490.gamestarter;
 
+import java.util.*;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -9,6 +10,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.AssetManager;
+import android.gesture.Gesture;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,6 +25,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,21 +39,26 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
    private Activity activity;
    private boolean gameOver;
    private boolean wallTouch;
+   private boolean up;
+   private boolean right;
+   private boolean down;
+   private boolean left;
    private Point playerStart;
    private Point endGame;
    private Paint playerChar;
+   private Point playerPoint;
    private Paint minoChar;
-   private Paint backgroundPaint;
    private int screenWidth;
    private int screenHeight;
    private int moves;
    private boolean dialogIsDisplayed = false;
    private Bitmap mazeImg;
    private Rect image = new Rect();
+   private ArrayList<String> fileNameList;
 
 
 
-   public MainGameView(Context context, AttributeSet attrs){
+   public MainGameView(Context context, AttributeSet attrs) {
        super(context, attrs);
        activity = (Activity) context;
 
@@ -57,9 +67,9 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
        playerStart = new Point();
        playerChar = new Paint();
        minoChar = new Paint();
-       backgroundPaint = new Paint();
-   }
 
+
+   }
     protected void onSizeChanged(int w, int h, int oldw, int oldh){
         super.onSizeChanged(w,h,oldw,oldh);
         screenWidth = w;
@@ -67,10 +77,11 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
 
         newGame();
     }
-
+    //starts a new game with the player character at the starting point.
     public void newGame(){
         playerStart.x = 25;
-        playerStart.y = 25;
+        playerStart.y = 35;
+
 
         if (gameOver){
             gameOver = false;
@@ -88,8 +99,17 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
     //paint.
     private void drawMazeElements(Canvas canvas, Context context) {
         try {
+            Random rand = new Random();
+            ArrayList<Integer> randomMaze = new ArrayList<Integer>();
             AssetManager assetManager = context.getAssets();
-            InputStream inputStream = assetManager.open("trial.png");
+            String [] listMaze;
+            
+            for(int i = 0; i < fileNameList.size(); i++){
+                randomMaze.add(i);
+            }
+            int n = rand.nextInt(fileNameList.size());
+            String fileName = fileNameList.get(n);
+            InputStream inputStream = assetManager.open(fileName);
             mazeImg = BitmapFactory.decodeStream(inputStream);
             inputStream.close();
         }catch(IOException e){
@@ -97,6 +117,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
         }
         image.set(0,0,screenWidth,screenHeight);
         canvas.drawBitmap(mazeImg,null,image,null);
+        canvas.drawCircle(playerStart.x, playerStart.y, 10, playerChar);
     }
    /* private void showGameOverDialog(final int messageId){
         final DialogFragment gameResult = new DialogFragment(){
@@ -154,6 +175,42 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
             }
         }
     }
+    private class MyGestureListener extends SimpleOnGestureListener{
+        private static final int SWIPE_MIN_DISTANCE = 120;
+
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
+                final float xDistance = e1.getX() - e2.getX();
+                final float yDistance = e1.getY() - e2.getY();
+                if(xDistance > SWIPE_MIN_DISTANCE){
+                    onSwipeLeft();
+                    return true;
+                }else if(xDistance < -SWIPE_MIN_DISTANCE){
+                    onSwipeRight();
+                    return true;
+                }else if(yDistance > SWIPE_MIN_DISTANCE){
+                    onSwipeDown();
+                    return true;
+                }else if(yDistance < -SWIPE_MIN_DISTANCE){
+                    onSwipeUp();
+                    return true;
+                }
+                return false;
+
+            }
+            protected void onSwipeLeft(){
+
+            }
+            protected void onSwipeRight(){
+
+            }
+            protected void onSwipeUp(){
+
+            }
+            protected void onSwipeDown(){
+
+            }
+    }
+       //creates the thread for which the game runs until the game is over.
     private class MazeThread extends Thread{
         private SurfaceHolder surfaceHolder;
         private boolean threadIsRunning = true;
@@ -176,7 +233,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
                 try{
                     canvas = surfaceHolder.lockCanvas(null);
                         synchronized(surfaceHolder){
-                            //updatePositions;
+                            updatePositions();
                             drawMazeElements(canvas, getContext());
                         }
                 }finally{
@@ -187,4 +244,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
             }
         }
     }
+
+
 }
