@@ -17,9 +17,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.View;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +34,11 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private Point playerPoint;
    private int screenWidth;
    private int screenHeight;
+   private double imgX;
+   private double imgY;
    private boolean dialogIsDisplayed = false;
    private Bitmap mazeImg;
-   private Rect image = new Rect();
+   private Rect imageRect = new Rect();
    private GestureDetectorCompat gestureDetector;
 
 
@@ -98,9 +98,9 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         }catch(IOException e){
 
         }
-        image.set(0,0,screenWidth,screenHeight);
-        canvas.drawBitmap(mazeImg,null,image,null);
-        canvas.drawCircle(playerStart.x, playerStart.y, 10, playerChar);
+        imageRect.set(0, 0, screenWidth, screenHeight);
+        canvas.drawBitmap(mazeImg,null, imageRect,null);
+        canvas.drawCircle(playerPoint.x, playerPoint.y, 10, playerChar);
     }
    /*private void showGameOverDialog(final int messageId){
         final DialogFragment gameResult = new DialogFragment(){
@@ -160,8 +160,8 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
     public boolean onTouchEvent(MotionEvent event){
         Log.w(TAG, "Touch Event: " + event);
         this.gestureDetector.onTouchEvent(event);
-
-        return super.onTouchEvent(event);
+        super.onTouchEvent(event);
+        return true;
     }
 
     private class SwipeListener extends SimpleOnGestureListener{
@@ -200,12 +200,12 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
 
         protected void onSwipeUp(){
-            playerPoint.y = playerPoint.y - 10;
+            playerPoint.y = playerPoint.y + 10;
 
         }
 
         protected void onSwipeDown(){
-            playerPoint.y = playerPoint.y + 10;
+            playerPoint.y = playerPoint.y - 10;
         }
 
 
