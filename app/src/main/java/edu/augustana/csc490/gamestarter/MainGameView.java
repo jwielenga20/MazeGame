@@ -2,24 +2,16 @@
 // Displays and controls the Cannon Game
 package edu.augustana.csc490.gamestarter;
 
-import java.util.*;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.AssetManager;
-import android.gesture.Gesture;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -28,13 +20,11 @@ import android.view.SurfaceView;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.View;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
-{
+public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private static final String TAG = "MainGameView";
    private MazeThread mazeThread;
    private Activity activity;
@@ -49,7 +39,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
    private boolean dialogIsDisplayed = false;
    private Bitmap mazeImg;
    private Rect image = new Rect();
-   private GestureDetector gesture;
+   private GestureDetectorCompat gestureDetector;
 
 
 
@@ -63,7 +53,8 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
        playerChar = new Paint();
        playerPoint = new Point ();
        endGame = new Point();
-
+       gestureDetector = new GestureDetectorCompat(context, new SwipeListener());
+        Log.w(TAG, "Created!");
 
 
    }
@@ -83,7 +74,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
         endGame.x = screenWidth;
         endGame.y = screenHeight;
 
-
         if (gameOver){
             gameOver = false;
             mazeThread = new MazeThread(getHolder());
@@ -93,20 +83,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
     //This class is to update the positions of the player and determine where they are compared
     //to the end of the game.
     private void updatePositions(){
-        this.setOnTouchListener(new MyGestureDetector(){
-            public void onSwipeLeft(){
-                playerPoint.x = playerPoint.x - 10;
-            }
-            public void onSwipeRight(){
-                playerPoint.x = playerPoint.x + 10;
-            }
-            public void onSwipeUp(){
-                playerPoint.y = playerPoint.y - 10;
-            }
-            public void onSwipeDown(){
-                playerPoint.y = playerPoint.y + 10;
-            }
-        });
+
     }
 
 
@@ -179,17 +156,23 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
             }
         }
     }
-    private class MyGestureDetector implements OnTouchListener{
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        Log.w(TAG, "Touch Event: " + event);
+        this.gestureDetector.onTouchEvent(event);
+
+        return super.onTouchEvent(event);
+    }
+
+    private class SwipeListener extends SimpleOnGestureListener{
         private static final int SWIPE_MIN_DISTANCE = 100;
-
-        public boolean onTouch(final View v, final MotionEvent event){
-           gesture.onTouchEvent(event);
-            return true;
-        }
-
+        
+        @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY){
                 final float xDistance = e1.getX() - e2.getX();
                 final float yDistance = e1.getY() - e2.getY();
+            Log.w(TAG, "xDistance: " + xDistance);
+            Log.w(TAG, "yDistance: " + yDistance);
                 if(xDistance > SWIPE_MIN_DISTANCE){
                     onSwipeLeft();
                     return true;
@@ -207,23 +190,25 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback
 
             }
         protected void onSwipeLeft(){
-
+            playerPoint.x = playerPoint.x - 10;
         }
 
 
         protected void onSwipeRight(){
-
+            playerPoint.x = playerPoint.x + 10;
         }
 
 
         protected void onSwipeUp(){
+            playerPoint.y = playerPoint.y - 10;
 
         }
 
+        protected void onSwipeDown(){
+            playerPoint.y = playerPoint.y + 10;
+        }
 
-       protected void onSwipeDown(){
 
-       }
 
 
 
