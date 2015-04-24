@@ -34,14 +34,16 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private Point playerPoint;
    private int screenWidth;
    private int screenHeight;
-   private double imgWidth;
-   private double imgHeight;
-   private double fX;
-   private double fY;
+   private float imgWidth;
+   private float imgHeight;
+   private float fX;
+   private float fY;
    private boolean dialogIsDisplayed = false;
    private Bitmap mazeImg;
    private Rect imageRect = new Rect();
    private GestureDetectorCompat gestureDetector;
+   private float pointPlayerX;
+   private float pointPlayerY;
 
 
 
@@ -64,7 +66,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         super.onSizeChanged(w,h,oldw,oldh);
         screenWidth = w;
         screenHeight = h;
-
+        Log.w(TAG, "Screen width and Height:  " + screenWidth  + " " + screenHeight);
         newGame();
     }
     //starts a new game with the player character at the starting point.
@@ -75,13 +77,8 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         playerPoint.y = 35;
         endGame.x = screenWidth;
         endGame.y = screenHeight;
-        imgHeight = mazeImg.getHeight();
-        imgWidth = mazeImg.getWidth();
-        fX = playerPoint.x / screenWidth;
-        fY = playerPoint.y / screenHeight;
-
-
-
+        fX = (float) playerPoint.x / screenWidth;
+        fY = (float) playerPoint.y / screenHeight;
 
         if (gameOver){
             gameOver = false;
@@ -107,9 +104,17 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         }catch(IOException e){
 
         }
+        imgHeight = mazeImg.getHeight();
+        imgWidth = mazeImg.getWidth();
+        pointPlayerX = fX * imgWidth;
+        pointPlayerY = fY * imgHeight;
+        Log.w(TAG, "imgHeight: " + imgHeight);
+        Log.w(TAG, "fX = " + fX);
         imageRect.set(0, 0, screenWidth, screenHeight);
         canvas.drawBitmap(mazeImg,null, imageRect,null);
         canvas.drawCircle(playerPoint.x, playerPoint.y, 10, playerChar);
+
+
     }
    /*private void showGameOverDialog(final int messageId){
         final DialogFragment gameResult = new DialogFragment(){

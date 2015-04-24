@@ -50,7 +50,8 @@
         <activity
             android:name=".Maze"
             android:label="@string/title_activity_maze"
-            android:parentActivityName=".MazeStartScreen" >
+            android:parentActivityName=".MazeStartScreen"
+            android:screenOrientation="landscape">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="edu.augustana.csc490.gamestarter.MazeStartScreen" />
