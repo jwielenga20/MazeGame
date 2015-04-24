@@ -1,5 +1,5 @@
 // CannonView.java
-// Displays and controls the Cannon Game
+// Displays and controls the Maze Game
 package edu.augustana.csc490.gamestarter;
 
 import android.app.Activity;
@@ -34,8 +34,10 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private Point playerPoint;
    private int screenWidth;
    private int screenHeight;
-   private double imgX;
-   private double imgY;
+   private double imgWidth;
+   private double imgHeight;
+   private double fX;
+   private double fY;
    private boolean dialogIsDisplayed = false;
    private Bitmap mazeImg;
    private Rect imageRect = new Rect();
@@ -73,6 +75,13 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         playerPoint.y = 35;
         endGame.x = screenWidth;
         endGame.y = screenHeight;
+        imgHeight = mazeImg.getHeight();
+        imgWidth = mazeImg.getWidth();
+        fX = playerPoint.x / screenWidth;
+        fY = playerPoint.y / screenHeight;
+
+
+
 
         if (gameOver){
             gameOver = false;
