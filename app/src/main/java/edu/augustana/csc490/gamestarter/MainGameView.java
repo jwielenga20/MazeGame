@@ -8,6 +8,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -27,24 +28,19 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private MazeThread mazeThread;
    private Activity activity;
    private boolean gameOver;
-   private boolean wallTouch;
    private int moves;
    private Point endGame;
    private Paint playerChar;
    private Point playerPoint;
+    private Point playerStart;
    private int screenWidth;
    private int screenHeight;
    private float imgWidth;
    private float imgHeight;
-   private float fX;
-   private float fY;
    private boolean dialogIsDisplayed = false;
    private Bitmap mazeImg;
    private Rect imageRect = new Rect();
    private GestureDetectorCompat gestureDetector;
-   private float playerPointX;
-   private float playerPointY;
-
 
 
    public MainGameView(Context context, AttributeSet attrs) {
@@ -54,6 +50,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
        getHolder().addCallback(this);
        playerChar = new Paint();
        playerPoint = new Point ();
+       playerStart = new Point();
        endGame = new Point();
        gestureDetector = new GestureDetectorCompat(context, new SwipeListener());
         Log.w(TAG, "Created!");
@@ -71,10 +68,11 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
     public void newGame(){
         playerPoint.x = 25;
         playerPoint.y = 30;
+        playerStart.x = 25;
+        playerStart.y = 30;
         endGame.x = screenWidth;
         endGame.y = screenHeight;
-        fX = (float) playerPoint.x / screenWidth;
-        fY = (float) playerPoint.y / screenHeight;
+
 
         if (gameOver){
             gameOver = false;
@@ -101,37 +99,13 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         }
         imgHeight = mazeImg.getHeight();
         imgWidth = mazeImg.getWidth();
-        playerPointX = fX * imgWidth;
-        playerPointY = fY * imgHeight;
+
+
         imageRect.set(0, 0, screenWidth, screenHeight);
-        canvas.drawBitmap(mazeImg,null, imageRect,null);
+        canvas.drawBitmap(mazeImg, null, imageRect, null);
         canvas.drawCircle(playerPoint.x, playerPoint.y, 10, playerChar);
-
-
     }
-   /*private void showGameOverDialog(final int messageId){
-        final DialogFragment gameResult = new DialogFragment(){
-            public Dialog onCreateDialog(Bundle bundle){
-                AlertDialog.Builder builder =
-                        new AlertDialog.Builder(getActivity());
-                builder.setTitle(getResources().getString(messageId));
-                builder.setPositiveButton("Reset Game", new DialogInterface.OnClickListener(){
-                    public void onClick(DialogInterface dialog, int which){
-                        dialogIsDisplayed = false;
-                        newGame();
-                    }
-                });
-                activity.runOnUiThread(new Runnable(){
-                    public void run(){
-                        dialogIsDisplayed = true;
-                        gameResult.setCancelable(false);
-                        gameResult.show(activity.getFragmentManager());
-                    }
-                });
-            }
-        }
-    }
-    */
+
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height){
 
     }
@@ -170,9 +144,16 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         super.onTouchEvent(event);
         return true;
     }
+    //returns true if the destination coordinate is a wall
+    public boolean wallCheck(float destinationX, float destinationY){
+        float fX =  destinationX / screenWidth;
+        float fY =  destinationY / screenHeight;
+        float playerPointImgX = fX * imgWidth;
+        float playerPointImgY = fY * imgHeight;
+        int pixelColor = mazeImg.getPixel((int) playerPointImgX, (int) playerPointImgY);
+        return (pixelColor == Color.BLACK);
 
-    public boolean wallCheck(){
-        return true;
+
     }
 
     private class SwipeListener extends SimpleOnGestureListener{
@@ -201,25 +182,33 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
             }
         protected void onSwipeLeft(){
-            playerPoint.x = playerPoint.x - 20;
+            if(!wallCheck(playerPoint.x - 20, playerPoint.y) && playerPoint.x - 20 < playerStart.x) {
+                playerPoint.x = playerPoint.x - 20;
+            }
             moves++;
         }
 
 
         protected void onSwipeRight(){
-            playerPoint.x = playerPoint.x + 20;
+            if(!wallCheck(playerPoint.x + 20, playerPoint.y)) {
+                playerPoint.x = playerPoint.x + 20;
+            }
             moves++;
         }
 
 
         protected void onSwipeUp(){
-            playerPoint.y = playerPoint.y+ 20;
+            if(!wallCheck(playerPoint.x, playerPoint.y + 20)) {
+                playerPoint.y = playerPoint.y + 20;
+            }
             moves++;
 
         }
 
         protected void onSwipeDown(){
-            playerPoint.y = playerPoint.y - 20;
+            if(!wallCheck(playerPoint.x, playerPoint.y - 20)) {
+                playerPoint.y = playerPoint.y - 20;
+            }
             moves++;
         }
 
