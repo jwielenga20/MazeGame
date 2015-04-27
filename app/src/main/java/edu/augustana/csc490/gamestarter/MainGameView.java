@@ -42,8 +42,8 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private Bitmap mazeImg;
    private Rect imageRect = new Rect();
    private GestureDetectorCompat gestureDetector;
-   private float pointPlayerX;
-   private float pointPlayerY;
+   private float playerPointX;
+   private float playerPointY;
 
 
 
@@ -52,8 +52,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
        activity = (Activity) context;
 
        getHolder().addCallback(this);
-
-       playerStart = new Point();
        playerChar = new Paint();
        playerPoint = new Point ();
        endGame = new Point();
@@ -71,8 +69,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
     }
     //starts a new game with the player character at the starting point.
     public void newGame(){
-        playerStart.x = 25;
-        playerStart.y = 35;
         playerPoint.x = 25;
         playerPoint.y = 35;
         endGame.x = screenWidth;
@@ -106,10 +102,10 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         }
         imgHeight = mazeImg.getHeight();
         imgWidth = mazeImg.getWidth();
-        pointPlayerX = fX * imgWidth;
-        pointPlayerY = fY * imgHeight;
-        Log.w(TAG, "imgHeight: " + imgHeight);
-        Log.w(TAG, "fX = " + fX);
+        playerPointX = fX * imgWidth;
+        playerPointY = fY * imgHeight;
+        playerPoint.x = (int) playerPointX;
+        playerPoint.y = (int) playerPointY;
         imageRect.set(0, 0, screenWidth, screenHeight);
         canvas.drawBitmap(mazeImg,null, imageRect,null);
         canvas.drawCircle(playerPoint.x, playerPoint.y, 10, playerChar);
@@ -214,7 +210,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
 
         protected void onSwipeUp(){
-            playerPoint.y = playerPoint.y + 10;
+            playerPoint.y = playerPoint.y+ 10;
 
         }
 
