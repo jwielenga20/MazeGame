@@ -28,7 +28,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private Activity activity;
    private boolean gameOver;
    private boolean wallTouch;
-   private Point playerStart;
+   private int moves;
    private Point endGame;
    private Paint playerChar;
    private Point playerPoint;
@@ -70,7 +70,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
     //starts a new game with the player character at the starting point.
     public void newGame(){
         playerPoint.x = 25;
-        playerPoint.y = 35;
+        playerPoint.y = 30;
         endGame.x = screenWidth;
         endGame.y = screenHeight;
         fX = (float) playerPoint.x / screenWidth;
@@ -88,8 +88,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
     }
 
-
-    //This method is to draw the overall maze itself from a predetermined picture that is made
+    //This method is to draw the overall maze itself from a predetermined picture that is made from
     //paint.
     private void drawMazeElements(Canvas canvas, Context context) {
         try {
@@ -104,8 +103,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         imgWidth = mazeImg.getWidth();
         playerPointX = fX * imgWidth;
         playerPointY = fY * imgHeight;
-        playerPoint.x = (int) playerPointX;
-        playerPoint.y = (int) playerPointY;
         imageRect.set(0, 0, screenWidth, screenHeight);
         canvas.drawBitmap(mazeImg,null, imageRect,null);
         canvas.drawCircle(playerPoint.x, playerPoint.y, 10, playerChar);
@@ -174,6 +171,10 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         return true;
     }
 
+    public boolean wallCheck(){
+        return true;
+    }
+
     private class SwipeListener extends SimpleOnGestureListener{
         private static final int SWIPE_MIN_DISTANCE = 100;
         
@@ -200,22 +201,26 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
             }
         protected void onSwipeLeft(){
-            playerPoint.x = playerPoint.x - 10;
+            playerPoint.x = playerPoint.x - 20;
+            moves++;
         }
 
 
         protected void onSwipeRight(){
-            playerPoint.x = playerPoint.x + 10;
+            playerPoint.x = playerPoint.x + 20;
+            moves++;
         }
 
 
         protected void onSwipeUp(){
-            playerPoint.y = playerPoint.y+ 10;
+            playerPoint.y = playerPoint.y+ 20;
+            moves++;
 
         }
 
         protected void onSwipeDown(){
-            playerPoint.y = playerPoint.y - 10;
+            playerPoint.y = playerPoint.y - 20;
+            moves++;
         }
 
 
