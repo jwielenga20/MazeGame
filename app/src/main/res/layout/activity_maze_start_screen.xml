@@ -21,22 +21,32 @@
         android:layout_height="wrap_content"
         android:text="Minotaur"
         android:id="@+id/minoConfirmed"
+        android:layout_marginTop="34dp"
+        android:checked="false"
+        android:textSize="24dp"
         android:layout_alignParentTop="true"
         android:layout_alignLeft="@+id/mazeButton"
-        android:layout_alignStart="@+id/mazeButton"
-        android:layout_marginTop="98dp"
-        android:layout_alignRight="@+id/mazeButton"
-        android:layout_alignEnd="@+id/mazeButton"
-        android:checked="false"
-        android:textSize="24dp" />
+        android:layout_alignStart="@+id/mazeButton" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Swipe in the direction you want to move!! Get to the end of the maze in the least amount of moves!!"
+        android:id="@+id/instructionsText"
+        android:layout_marginBottom="36dp"
+        android:layout_above="@+id/mazeButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="Here the player would pick which monster to run away from. (if I had time to code the monsters)"
-        android:id="@+id/monsterSelect"
-        android:layout_centerVertical="true"
+        android:id="@+id/monsterScreenText"
+        android:layout_marginTop="74dp"
+        android:layout_below="@+id/minoConfirmed"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
