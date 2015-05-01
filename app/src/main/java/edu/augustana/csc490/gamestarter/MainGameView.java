@@ -57,7 +57,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
        playerPoint = new Point ();
        playerStart = new Point();
        endGame = new Point();
-       moves = 0;
        gestureDetector = new GestureDetectorCompat(context, new SwipeListener());
         Log.w(TAG, "Created!");
 
@@ -76,7 +75,8 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         playerPoint.y = 30;
         playerStart.x = 25;
         playerStart.y = 30;
-        endGame.x = screenWidth - 5;
+        endGame.x = screenWidth - 20;
+        moves = 0;
 
 
         if (gameOver){
@@ -104,8 +104,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         }
         imgHeight = mazeImg.getHeight();
         imgWidth = mazeImg.getWidth();
-
-
         imageRect.set(0, 0, screenWidth, screenHeight);
         canvas.drawBitmap(mazeImg, null, imageRect, null);
         canvas.drawCircle(playerPoint.x, playerPoint.y, 10, playerChar);
@@ -176,6 +174,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
                 final float yDistance = e1.getY() - e2.getY();
             Log.w(TAG, "xDistance: " + xDistance);
             Log.w(TAG, "yDistance: " + yDistance);
+            Log.w(TAG, "moves " + moves);
                 if(xDistance > SWIPE_MIN_DISTANCE){
                     onSwipeLeft();
                     return true;
@@ -236,7 +235,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
                         AlertDialog.Builder builder =
                                 new AlertDialog.Builder(getActivity());
                         builder.setTitle(getResources().getString(messageId));
-                        builder.setMessage(getResources().getString(moves));
+                        builder.setMessage(getResources().getString(R.string.moves_made, moves));
                         builder.setPositiveButton(R.string.reset_game,
                                 new DialogInterface.OnClickListener() {
                                     @Override

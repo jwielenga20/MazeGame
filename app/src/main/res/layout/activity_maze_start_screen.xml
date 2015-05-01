@@ -30,4 +30,13 @@
         android:checked="false"
         android:textSize="24dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Here the player would pick which monster to run away from. (if I had time to code the monsters)"
+        android:id="@+id/monsterSelect"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
