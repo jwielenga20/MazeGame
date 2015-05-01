@@ -43,9 +43,13 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private float imgWidth;
    private float imgHeight;
    private boolean dialogIsDisplayed = false;
+   private int velocityX = 0;
+   private int velocityY = 0;
    private Bitmap mazeImg;
    private Rect imageRect = new Rect();
    private GestureDetectorCompat gestureDetector;
+   private int moveSpeed = 10;
+   private double totalelapsedTime = 0.0;
 
 
    public MainGameView(Context context, AttributeSet attrs) {
@@ -60,7 +64,14 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
        gestureDetector = new GestureDetectorCompat(context, new SwipeListener());
         Log.w(TAG, "Created!");
 
+       try {
+           AssetManager assetManager = context.getAssets();
+           InputStream inputStream = assetManager.open("maze1.png");
+           mazeImg = BitmapFactory.decodeStream(inputStream);
+           inputStream.close();
+       }catch(IOException e){
 
+       }
    }
     protected void onSizeChanged(int w, int h, int oldw, int oldh){
         super.onSizeChanged(w,h,oldw,oldh);
@@ -71,12 +82,13 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
     }
     //starts a new game with the player character at the starting point.
     public void newGame(){
-        playerPoint.x = 25;
-        playerPoint.y = 30;
-        playerStart.x = 25;
-        playerStart.y = 30;
+        playerPoint.x = 20;
+        playerPoint.y = 20;
+        playerStart.x = 20;
+        playerStart.y = 20;
         endGame.x = screenWidth - 20;
-        moves = 0;
+        velocityX = 0;
+        velocityY = 0;
 
 
         if (gameOver){
@@ -88,26 +100,25 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
     //This class is to update the positions of the player and determine where they are compared
     //to the end of the game.
     private void updatePositions(){
+        if(!wallCheck(playerPoint.x + velocityX, playerPoint.y) && playerPoint.x + velocityX < screenWidth && playerPoint.x + velocityX > playerStart.x) {
+            playerPoint.x = playerPoint.x + velocityX;
+        }
+        if(!wallCheck(playerPoint.x, playerPoint.y + velocityY) && playerPoint.y - velocityY > 0 && playerPoint.y + velocityY < screenHeight) {
+            playerPoint.y = playerPoint.y + velocityY;
+        }
 
     }
 
     //This method is to draw the overall maze itself from a predetermined picture that is made from
     //paint.
     private void drawMazeElements(Canvas canvas, Context context) {
-        try {
-            AssetManager assetManager = context.getAssets();
-            InputStream inputStream = assetManager.open("maze1.png");
-            mazeImg = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-        }catch(IOException e){
 
-        }
         imgHeight = mazeImg.getHeight();
         imgWidth = mazeImg.getWidth();
         imageRect.set(0, 0, screenWidth, screenHeight);
         canvas.drawBitmap(mazeImg, null, imageRect, null);
         canvas.drawCircle(playerPoint.x, playerPoint.y, 10, playerChar);
-        if(playerPoint.x == endGame.x){
+        if(playerPoint.x >= endGame.x){
             gameOver = true;
             mazeThread.setRunning(false);
             showGameOverDialog(R.string.game_over);
@@ -174,7 +185,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
                 final float yDistance = e1.getY() - e2.getY();
             Log.w(TAG, "xDistance: " + xDistance);
             Log.w(TAG, "yDistance: " + yDistance);
-            Log.w(TAG, "moves " + moves);
                 if(xDistance > SWIPE_MIN_DISTANCE){
                     onSwipeLeft();
                     return true;
@@ -192,34 +202,29 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
             }
         protected void onSwipeLeft(){
-            if(!wallCheck(playerPoint.x - 20, playerPoint.y) && playerPoint.x - 20 > playerStart.x) {
-                playerPoint.x = playerPoint.x - 20;
-            }
-            moves++;
+            velocityX = -moveSpeed;
+            velocityY = 0;
+
         }
 
 
         protected void onSwipeRight(){
-            if(!wallCheck(playerPoint.x + 20, playerPoint.y) && playerPoint.x + 20 < screenWidth) {
-                playerPoint.x = playerPoint.x + 20;
-            }
-            moves++;
+            velocityX = moveSpeed;
+            velocityY = 0;
+
         }
 
 
         protected void onSwipeUp(){
-            if(!wallCheck(playerPoint.x, playerPoint.y - 20) && playerPoint.y - 20 > 0) {
-                playerPoint.y = playerPoint.y - 20;
-            }
-            moves++;
+           velocityY = -moveSpeed;
+           velocityX = 0;
 
         }
 
         protected void onSwipeDown(){
-            if(!wallCheck(playerPoint.x, playerPoint.y + 20) && playerPoint.y + 20 < screenHeight) {
-                playerPoint.y = playerPoint.y + 20;
-            }
-            moves++;
+            velocityY = moveSpeed;
+            velocityX = 0;
+
         }
 
 
@@ -235,7 +240,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
                         AlertDialog.Builder builder =
                                 new AlertDialog.Builder(getActivity());
                         builder.setTitle(getResources().getString(messageId));
-                        builder.setMessage(getResources().getString(R.string.moves_made, moves));
+                        builder.setMessage(getResources().getString(R.string.survival));
                         builder.setPositiveButton(R.string.reset_game,
                                 new DialogInterface.OnClickListener() {
                                     @Override
@@ -277,7 +282,6 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         public void run(){
 
             Canvas canvas = null;
-
             while(threadIsRunning){
                 try{
                     canvas = surfaceHolder.lockCanvas(null);
