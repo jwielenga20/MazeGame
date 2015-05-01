@@ -3,7 +3,8 @@
 
     <string name="app_name">Maze Game</string>
     <string name="title_activity_monster_screen">MonsterScreen</string>
-
+    <string name="reset_game">Reset Game</string>
+    <string name="game_over">Game Over!</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_maze_start_screen">MazeStartScreen</string>

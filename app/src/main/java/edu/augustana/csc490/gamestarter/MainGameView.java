@@ -3,7 +3,11 @@
 package edu.augustana.csc490.gamestarter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -52,6 +57,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
        playerPoint = new Point ();
        playerStart = new Point();
        endGame = new Point();
+       moves = 0;
        gestureDetector = new GestureDetectorCompat(context, new SwipeListener());
         Log.w(TAG, "Created!");
 
@@ -70,8 +76,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         playerPoint.y = 30;
         playerStart.x = 25;
         playerStart.y = 30;
-        endGame.x = screenWidth;
-        endGame.y = screenHeight;
+        endGame.x = screenWidth - 5;
 
 
         if (gameOver){
@@ -104,6 +109,12 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
         imageRect.set(0, 0, screenWidth, screenHeight);
         canvas.drawBitmap(mazeImg, null, imageRect, null);
         canvas.drawCircle(playerPoint.x, playerPoint.y, 10, playerChar);
+        if(playerPoint.x == endGame.x){
+            gameOver = true;
+            mazeThread.setRunning(false);
+            showGameOverDialog(R.string.game_over);
+        }
+
     }
 
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height){
@@ -172,17 +183,17 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
                     onSwipeRight();
                     return true;
                 }else if(yDistance > SWIPE_MIN_DISTANCE){
-                    onSwipeDown();
+                    onSwipeUp();
                     return true;
                 }else if(yDistance < -SWIPE_MIN_DISTANCE){
-                    onSwipeUp();
+                    onSwipeDown();
                     return true;
                 }
                 return false;
 
             }
         protected void onSwipeLeft(){
-            if(!wallCheck(playerPoint.x - 20, playerPoint.y) && playerPoint.x - 20 < playerStart.x) {
+            if(!wallCheck(playerPoint.x - 20, playerPoint.y) && playerPoint.x - 20 > playerStart.x) {
                 playerPoint.x = playerPoint.x - 20;
             }
             moves++;
@@ -190,7 +201,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
 
         protected void onSwipeRight(){
-            if(!wallCheck(playerPoint.x + 20, playerPoint.y)) {
+            if(!wallCheck(playerPoint.x + 20, playerPoint.y) && playerPoint.x + 20 < screenWidth) {
                 playerPoint.x = playerPoint.x + 20;
             }
             moves++;
@@ -198,16 +209,16 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
 
         protected void onSwipeUp(){
-            if(!wallCheck(playerPoint.x, playerPoint.y + 20)) {
-                playerPoint.y = playerPoint.y + 20;
+            if(!wallCheck(playerPoint.x, playerPoint.y - 20) && playerPoint.y - 20 > 0) {
+                playerPoint.y = playerPoint.y - 20;
             }
             moves++;
 
         }
 
         protected void onSwipeDown(){
-            if(!wallCheck(playerPoint.x, playerPoint.y - 20)) {
-                playerPoint.y = playerPoint.y - 20;
+            if(!wallCheck(playerPoint.x, playerPoint.y + 20) && playerPoint.y + 20 < screenHeight) {
+                playerPoint.y = playerPoint.y + 20;
             }
             moves++;
         }
@@ -216,6 +227,38 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
 
 
 
+    }
+    private void showGameOverDialog(final int messageId){
+        final DialogFragment gameResult =
+                new DialogFragment() {
+                    @Override
+                    public Dialog onCreateDialog(Bundle bundle) {
+                        AlertDialog.Builder builder =
+                                new AlertDialog.Builder(getActivity());
+                        builder.setTitle(getResources().getString(messageId));
+                        builder.setMessage(getResources().getString(moves));
+                        builder.setPositiveButton(R.string.reset_game,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialogIsDisplayed = false;
+                                        newGame();
+                                    }
+
+                                }
+                        );
+                        return builder.create();
+                    }
+                };
+        activity.runOnUiThread(
+                new Runnable(){
+                    public void run(){
+                        dialogIsDisplayed = true;
+                        gameResult.setCancelable(false);
+                        gameResult.show(activity.getFragmentManager(), "results");
+                    }
+                }
+        );
     }
        //creates the thread for which the game runs until the game is over.
     private class MazeThread extends Thread{
