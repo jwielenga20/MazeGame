@@ -48,7 +48,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private Bitmap mazeImg;
    private Rect imageRect = new Rect();
    private GestureDetectorCompat gestureDetector;
-   private int moveSpeed = 10;
+   private int moveSpeed = 1;
    private double totalelapsedTime = 0.0;
 
 
