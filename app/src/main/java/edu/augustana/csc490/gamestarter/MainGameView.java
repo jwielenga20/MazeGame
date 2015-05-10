@@ -49,7 +49,7 @@ public class MainGameView extends SurfaceView implements SurfaceHolder.Callback{
    private Rect imageRect = new Rect();
    private GestureDetectorCompat gestureDetector;
    private int moveSpeed = 1;
-   private double totalelapsedTime = 0.0;
+
 
 
    public MainGameView(Context context, AttributeSet attrs) {
